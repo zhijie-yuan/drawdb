@@ -130,7 +130,7 @@ test("PostgreSQL validates and exports string defaults without losing content", 
   assert.match(sql, /"sized_too_long" VARCHAR\(3\) DEFAULT 'abcd'/);
   assert.match(sql, /"quoted_boundary" VARCHAR\(5\) DEFAULT '"abc"'/);
   assert.match(sql, /"quoted_too_long" VARCHAR\(4\) DEFAULT '"abc"'/);
-  assert.match(sql, /"empty_string" VARCHAR\(3\) DEFAULT ''/);
+  assert.match(sql, /^\t"empty_string" VARCHAR\(3\) DEFAULT '',$/m);
   assert.match(sql, /"blank_default" TEXT(?! DEFAULT)/);
   assert.match(sql, /"sql_null" TEXT DEFAULT NULL/);
   assert.match(sql, /"not_null_sql_null" TEXT NOT NULL DEFAULT NULL/);
