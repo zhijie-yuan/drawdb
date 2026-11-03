@@ -21,6 +21,14 @@ export function parseDefault(field, database = DB.GENERIC) {
 
   const typeInfo = dbToTypes[database][field.type];
   if (
+    database === DB.POSTGRES &&
+    typeInfo?.hasQuotes &&
+    field.default === "''"
+  ) {
+    return "''";
+  }
+
+  if (
     isFunction(field.default) ||
     isKeyword(field.default) ||
     (typeInfo && !typeInfo.hasQuotes)
@@ -70,17 +78,15 @@ export function getInlineFK(table, obj) {
   obj.references.forEach((r) => {
     if (r.startTableId === table.id) {
       const endTable = obj.tables.find((t) => t.id === r.endTableId);
-      const { startColumns, endColumns } = getFkColumnNames(
-        r,
-        table,
-        endTable,
-      );
+      const { startColumns, endColumns } = getFkColumnNames(r, table, endTable);
       fks.push(
         `\tFOREIGN KEY (${startColumns
           .map((c) => `"${c}"`)
           .join(", ")}) REFERENCES "${endTable?.name}"(${endColumns
           .map((c) => `"${c}"`)
-          .join(", ")})\n\tON UPDATE ${r.updateConstraint.toUpperCase()} ON DELETE ${r.deleteConstraint.toUpperCase()}`,
+          .join(
+            ", ",
+          )})\n\tON UPDATE ${r.updateConstraint.toUpperCase()} ON DELETE ${r.deleteConstraint.toUpperCase()}`,
       );
     }
   });

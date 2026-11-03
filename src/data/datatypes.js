@@ -974,10 +974,15 @@ const postgresTypesBase = {
     type: "VARCHAR",
     color: stringColor,
     checkDefault: (field) => {
-      if (strHasQuotes(field.default)) {
-        return field.default.length - 2 <= field.size;
+      if (
+        field.size === "" ||
+        field.size === null ||
+        field.size === undefined
+      ) {
+        return true;
       }
-      return field.default.length <= field.size;
+      const defaultLength = field.default === "''" ? 0 : field.default.length;
+      return defaultLength <= field.size;
     },
     hasCheck: true,
     isSized: true,
@@ -988,12 +993,7 @@ const postgresTypesBase = {
   TEXT: {
     type: "TEXT",
     color: stringColor,
-    checkDefault: (field) => {
-      if (strHasQuotes(field.default)) {
-        return field.default.length - 2 <= field.size;
-      }
-      return field.default.length <= field.size;
-    },
+    checkDefault: () => true,
     hasCheck: true,
     isSized: false,
     hasPrecision: false,
