@@ -91,6 +91,7 @@ test("PostgreSQL validates and exports string defaults without losing content", 
     makeField("quoted_boundary", "VARCHAR", '"abc"', { size: "5" }),
     makeField("quoted_too_long", "VARCHAR", '"abc"', { size: "4" }),
     makeField("empty_string", "VARCHAR", "''", { size: "3" }),
+    makeField("empty_text_string", "TEXT", "''"),
     makeField("blank_default", "TEXT", ""),
     makeField("sql_null", "TEXT", "NULL"),
     makeField("not_null_sql_null", "TEXT", "NULL", { notNull: true }),
@@ -108,6 +109,7 @@ test("PostgreSQL validates and exports string defaults without losing content", 
     "sized_boundary",
     "quoted_boundary",
     "empty_string",
+    "empty_text_string",
   ]) {
     assert.equal(issues.includes(defaultIssue(fieldName)), false, fieldName);
   }
@@ -131,6 +133,7 @@ test("PostgreSQL validates and exports string defaults without losing content", 
   assert.match(sql, /"quoted_boundary" VARCHAR\(5\) DEFAULT '"abc"'/);
   assert.match(sql, /"quoted_too_long" VARCHAR\(4\) DEFAULT '"abc"'/);
   assert.match(sql, /^\t"empty_string" VARCHAR\(3\) DEFAULT '',$/m);
+  assert.match(sql, /^\t"empty_text_string" TEXT DEFAULT '',$/m);
   assert.match(sql, /"blank_default" TEXT(?! DEFAULT)/);
   assert.match(sql, /"sql_null" TEXT DEFAULT NULL/);
   assert.match(sql, /"not_null_sql_null" TEXT NOT NULL DEFAULT NULL/);
